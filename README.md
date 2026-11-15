@@ -1,9 +1,3 @@
-# QAUTE
-
-QAUTE là website tư vấn sinh viên HCMUTE, hỗ trợ tra cứu câu hỏi thường gặp, gửi ticket tư vấn, trò chuyện và đặt lịch hẹn.
-
----
-
 ## Giới thiệu website
 
 QAUTE là hệ thống tư vấn trực tuyến dành cho sinh viên Đại học Công nghệ Kỹ thuật TP.HCM (HCMUTE). Website được phát triển nhằm giải quyết các vấn đề thường gặp của sinh viên trong quá trình học tập, từ những câu hỏi cơ bản về quy định nhà trường, đăng ký tín chỉ, học phí, cho đến các vấn đề chuyên sâu liên quan đến từng ngành học.
@@ -11,6 +5,21 @@ QAUTE là hệ thống tư vấn trực tuyến dành cho sinh viên Đại họ
 Hệ thống hoạt động như một cầu nối giữa sinh viên và đội ngũ tư vấn viên (Manager), giúp sinh viên có thể nhanh chóng tìm kiếm câu trả lời cho các thắc mắc thông qua hệ thống FAQ (Câu hỏi thường gặp), gửi yêu cầu tư vấn qua hệ thống Ticket, trò chuyện trực tiếp với tư vấn viên qua Chat thời gian thực, hoặc đặt lịch hẹn để được tư vấn trực tiếp. Đối với nhà trường, hệ thống cung cấp công cụ quản lý toàn diện cho Quản trị viên (Admin) và Tư vấn viên (Manager), giúp theo dõi, phân tích và cải thiện chất lượng dịch vụ tư vấn.
 
 Với giao diện thân thiện, hiện đại sử dụng Bootstrap Tabler, QAUTE mang lại trải nghiệm người dùng tốt trên cả máy tính và thiết bị di động. Hệ thống tích hợp nhiều tính năng hiện đại như xác thực JWT, chat thời gian thực qua WebSocket, quản lý lịch hẹn thông minh, và hệ thống báo cáo thống kê chi tiết, giúp tối ưu hóa quy trình tư vấn và nâng cao sự hài lòng của sinh viên.
+
+---
+
+## Công nghệ sử dụng
+
+- **Ngôn ngữ và nền tảng:** Java 25, Spring Boot 3.5.16, Maven
+- **Web:** Spring MVC, JSP, JSTL, Apache Tomcat, SiteMesh
+- **Giao diện:** Tabler, Bootstrap Icons, CSS và JavaScript thuần
+- **Cơ sở dữ liệu:** MySQL, Spring Data JPA/Hibernate
+- **Quản lý phiên bản cơ sở dữ liệu:** Flyway
+- **Bảo mật:** Spring Security, JWT, Google OAuth 2.0, mã hóa mật khẩu và phân quyền theo vai trò
+- **Thời gian thực:** WebSocket
+- **Email:** Spring Boot Mail/SMTP
+- **Lưu trữ tệp:** Cloudinary
+- **Tiện ích:** Lombok, Apache Tika, OWASP Java HTML Sanitizer, Bucket4j
 
 ---
 
@@ -366,6 +375,112 @@ Hệ thống QAUTE có 4 vai trò người dùng chính:
 
 ---
 
+## Kiến trúc và cấu trúc thư mục
+
+Ứng dụng được tổ chức theo kiến trúc nhiều lớp, tách biệt phần giao diện, xử lý nghiệp vụ, truy cập dữ liệu và cấu hình bảo mật.
+
+```text
+qaute/
+├── pom.xml                         # Khai báo phụ thuộc và cấu hình Maven
+├── mvnw, mvnw.cmd                  # Maven Wrapper
+├── src/main/java/.../qaute/
+│   ├── config/                     # Cấu hình ứng dụng, WebSocket, Cloudinary
+│   ├── controller/                 # Controller cho các trang và luồng nghiệp vụ
+│   ├── dto/                        # Đối tượng truyền dữ liệu
+│   ├── entity/                     # Entity JPA
+│   ├── repository/                 # Truy vấn và thao tác dữ liệu
+│   ├── security/                   # Xác thực, phân quyền và JWT
+│   ├── service/                    # Xử lý nghiệp vụ
+│   └── websocket/                  # Chức năng chat thời gian thực
+├── src/main/resources/
+│   ├── application*.properties     # Cấu hình theo môi trường
+│   ├── db/migration/                # Các migration Flyway
+│   ├── mail-templates/              # Mẫu email
+│   └── static/                      # CSS, JavaScript và hình ảnh
+└── src/main/webapp/WEB-INF/
+    ├── decorators/                  # Layout theo từng nhóm người dùng
+    ├── tags/                        # JSP tag dùng chung
+    └── views/                       # Các trang JSP
+```
+
+---
+
+## Yêu cầu hệ thống
+
+- JDK **25**
+- MySQL Server đang hoạt động
+- Maven 3.9 trở lên (không bắt buộc nếu sử dụng Maven Wrapper)
+- Trình duyệt hiện đại như Chrome, Edge hoặc Firefox
+- Kết nối Internet nếu sử dụng Google OAuth2, SMTP hoặc Cloudinary
+
+---
+
+## Cấu hình môi trường
+
+Ứng dụng sử dụng các profile Spring Boot sau:
+
+- `dev`: kết nối MySQL cục bộ và cấu hình dịch vụ phát triển
+- `demo`: tạo dữ liệu mẫu và các tài khoản demo
+- `google`: bật đăng nhập bằng Google OAuth2
+
+Có thể tạo tệp `src/main/resources/application-local.properties` để ghi đè cấu hình cục bộ. Hãy thêm tệp này vào `.gitignore` trước khi lưu thông tin nhạy cảm; không đưa mật khẩu, khóa JWT, thông tin SMTP, OAuth2 hoặc Cloudinary lên kho mã nguồn.
+
+Các cấu hình quan trọng gồm:
+
+| Cấu hình                                                      | Mục đích                        |
+| --------------------------------------------------------------- | ---------------------------------- |
+| `spring.datasource.url`                                       | Địa chỉ cơ sở dữ liệu MySQL |
+| `spring.datasource.username` / `spring.datasource.password` | Tài khoản MySQL                  |
+| `spring.mail.*`                                               | Cấu hình máy chủ gửi email    |
+| `app.jwt.secret`                                              | Khóa ký JWT                      |
+| `app.otp.hmac-secret`                                         | Khóa bảo vệ OTP                 |
+| `spring.security.oauth2.client.*`                             | Thông tin Google OAuth2           |
+| `cloudinary.url`                                              | Kết nối dịch vụ lưu trữ tệp |
+
+Flyway sẽ tự động chạy các migration trong `src/main/resources/db/migration` khi ứng dụng khởi động. Cơ sở dữ liệu `qaute` có thể được tạo tự động khi chuỗi kết nối cho phép `createDatabaseIfNotExist=true`.
+
+---
+
+## Hướng dẫn chạy trên Windows
+
+### 1. Chuẩn bị cơ sở dữ liệu
+
+Khởi động MySQL và bảo đảm tài khoản trong cấu hình có quyền tạo hoặc sử dụng cơ sở dữ liệu `qaute`. Nếu thông tin kết nối mặc định không phù hợp, hãy ghi đè bằng `application-local.properties`.
+
+### 2. Khởi động ứng dụng
+
+Mở PowerShell tại thư mục gốc dự án và chạy Maven Wrapper:
+
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev,demo"
+```
+
+Nếu đã cài Maven, có thể dùng lệnh tương đương:
+
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.profiles=dev,demo"
+```
+
+Chờ log `Tomcat started on port 8090`, sau đó mở `http://localhost:8090/auth/login`. Giữ terminal mở trong khi sử dụng ứng dụng và nhấn **Ctrl+C** để dừng.
+
+Để bật thêm Google OAuth2, bảo đảm đã cấu hình thông tin OAuth2 hợp lệ rồi chạy:
+
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev,demo,google"
+```
+
+Chỉ chạy một phiên QAUTE trên cổng 8090 tại một thời điểm.
+
+### 3. Đóng gói ứng dụng
+
+```powershell
+.\mvnw.cmd clean package
+```
+
+Tệp WAR sau khi đóng gói nằm trong thư mục `target/`.
+
+---
+
 ## Tài khoản demo
 
 | Vai trò         | Email hoặc MSSV                                    | Mật khẩu        |
@@ -385,19 +500,6 @@ Hệ thống QAUTE có 4 vai trò người dùng chính:
 | Tư vấn viên   | `manager.saudh@qaute.edu.vn`                      | `Manager@12345` |
 | Sinh viên       | `111111@qaute.edu.vn` ... `111130@qaute.edu.vn` | `Student@12345` |
 
-## Chạy ứng dụng trên Windows
-
-Cần Java 25, Maven và MySQL đang hoạt động. Trong PowerShell, mở đúng thư mục dự án rồi chạy:
-
-```powershell
-cd C:\Projects\qaute
-mvn spring-boot:run "-Dspring-boot.run.profiles=dev,demo"
-```
-
-Chờ log `Tomcat started on port 8090`, sau đó mở `http://localhost:8090/auth/login`.
-Giữ terminal này mở trong khi dùng ứng dụng. Để dừng, nhấn **Ctrl+C** trong chính terminal đã chạy.
-Chỉ chạy một phiên QAUTE trên cổng 8090; không chạy thêm từ VS Code khi một phiên Maven khác vẫn hoạt động.
-
 ---
 
 ## Đường dẫn để test
@@ -410,3 +512,15 @@ Sau khi chạy ứng dụng thành công, hãy truy cập các đường dẫn s
 - FAQ công khai: `http://localhost:8090/faq`
 - Thông báo công khai: `http://localhost:8090/announcements`
 - Đăng nhập: `http://localhost:8090/auth/login`
+
+---
+
+## Xử lý lỗi thường gặp
+
+- **Không kết nối được MySQL:** kiểm tra MySQL đang chạy, tên cơ sở dữ liệu, cổng, tài khoản và mật khẩu trong cấu hình.
+- **Cổng 8090 đã được sử dụng:** dừng tiến trình đang dùng cổng hoặc đổi `server.port`.
+- **Lỗi migration Flyway:** kiểm tra quyền truy cập cơ sở dữ liệu và thứ tự các tệp trong `db/migration`.
+- **Không đăng nhập được Google:** kiểm tra profile `google`, Client ID/Client Secret và URI chuyển hướng đã đăng ký.
+- **Không gửi được email hoặc tải tệp:** kiểm tra cấu hình SMTP hoặc Cloudinary; các chức năng này cần thông tin dịch vụ hợp lệ.
+
+---
